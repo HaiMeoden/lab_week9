@@ -20,7 +20,25 @@ class TeamPublic(TeamBase):
 class HeroBase(SQLModel):
     name: str = Field(index=True)
     age: int | None = None
+    power: str | None = None
     team_id: int | None = Field(default=None, foreign_key="team.id")
+    
+class HeroMissionLink(SQLModel, table=True):
+    hero_id: int | None = Field(default=None, foreign_key="hero.id", primary_key=True)
+    mission_id: int | None = Field(default=None, foreign_key="mission.id", primary_key=True)
+
+class MissionBase(SQLModel):
+    title: str
+
+class Mission(MissionBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    heroes: list["Hero"] = Relationship(back_populates="missions", link_model=HeroMissionLink)
+
+class MissionCreate(MissionBase):
+    pass
+
+class MissionPublic(MissionBase):
+    id: int
 
 class Hero(HeroBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
